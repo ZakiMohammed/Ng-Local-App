@@ -1,5 +1,7 @@
 <div class="container mt-5 mb-5">
     <div class="row">
+
+        <!-- left side -->
         <div class="col-md-3 col-opacity">
             <div class="card">
                 <div class="card-body">
@@ -11,17 +13,23 @@
                     <div>Welcome {{ name }}</div>
                 </div>
             </div>
+            <button type="button" class="btn btn-warning btn-block mt-3" (click)="onAddClick($event)">
+                <i class="fas fa-plus"></i> New Note
+            </button>
         </div>
+
+        <!-- right side -->
         <div class="col-md-9 col-opacity">
 
             <div class="pt-3 d-md-none"></div>
 
-            <button type="button" class="btn btn-warning mb-3" (click)="onAddClick($event)">New Note</button>
-
+            <!-- form -->
             <div [hidden]="hidForm">
                 <div class="card">
                     <div class="card-body">
-                        <form novalidate [formGroup]="frm" (ngSubmit)="onSubmit($event)" (keydown.enter)="handleEnterKeyPress($event)">
+                        <h5 class="card-title">{{ note === null ? 'New Note' : 'Update Note' }}</h5>
+                        <form novalidate [formGroup]="frm" (ngSubmit)="onSubmit($event)"
+                            (keydown.enter)="handleEnterKeyPress($event)">
                             <div class="form-group">
                                 <input type="text" class="form-control" #txtTitle placeholder="Enter title"
                                     formControlName="title"
@@ -39,7 +47,8 @@
                                     formControlName="body"></textarea>
                             </div>
                             <div class="input-group mb-3">
-                                <input type="text" class="form-control col-3" placeholder="Enter tag" (keyup.enter)="onTagAddClick($event)" #txtTag>
+                                <input type="text" class="form-control col-3" placeholder="Enter tag"
+                                    (keyup.enter)="onTagAddClick($event)" #txtTag>
                                 <div class="input-group-append">
                                     <button class="btn btn-primary" type="button" id="button-addon2"
                                         (click)="onTagAddClick($event)">+</button>
@@ -47,14 +56,13 @@
                             </div>
                             <div class="form-group">
                                 <span class="badge badge-secondary mr-1" *ngFor="let tag of tagList; let i = index;">
-                                    {{ tag }} <button type="button" class="btn badge badge-light"
-                                        (click)="onTagRemoveClick($event, i)">x</button>
+                                    {{ tag }} <i class="fas fa-times-circle" (click)="onTagRemoveClick($event, i)"></i>
                                 </span>
                             </div>
                             <div>
-                                <button class="btn btn-success mr-2">Save Note</button>
-                                <button type="reset" class="btn btn-secondary"
-                                    (click)="onResetClick($event)">Reset</button>
+                                <button class="btn btn-success mr-2" [disabled]="!frm.valid">Save Note</button>
+                                <button type="reset" class="btn btn-secondary mr-2" (click)="onResetClick($event)">Reset</button>
+                                <button type="button" class="btn btn-light float-right" (click)="onCancelClick($event)">Cancel</button>
                             </div>
                         </form>
                     </div>
@@ -62,13 +70,53 @@
                 <div class="pt-3"></div>
             </div>
 
-            <div class="card" *ngFor="let note of noteList;">
-                <div class="card-body">
-                    <h4 class="card-title text-warning">{{ note.title }}</h4>
-                    <p class="card-text">{{ note.body }}</p>
-                    <span class="badge badge-secondary mr-1" *ngFor="let tag of note.tags">{{ tag }}</span>
+            <!-- search -->
+            <div class="row">
+                <div class="col-10">
+                    <div class="input-group input-group-lg mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">
+                                <i class="fas fa-search"></i>
+                            </span>
+                        </div>
+                        <input type="text" class="form-control" placeholder="Search" [(ngModel)]="search">
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="btn-group" role="group">
+                        <button type="button" class="btn btn-outline-warning" [ngClass]="{ 'btn-warning': isGrid, 'btn-outline-warning': !isGrid }" (click)="isGrid = true">
+                            <i class="fas fa-th"></i>
+                        </button>
+                        <button type="button" class="btn" [ngClass]="{ 'btn-warning': !isGrid, 'btn-outline-warning': isGrid }" (click)="isGrid = false">
+                            <i class="fas fa-th-list"></i>
+                        </button>                        
+                    </div>
                 </div>
             </div>
+
+            <!-- list -->
+            <div [ngClass]="{ 'card-columns': isGrid }">
+                <div class="card mb-3" *ngFor="let note of filterNoteList.slice().reverse(); let i = index">
+                    <div class="card-body">
+                        <button class="btn btn-light text-danger btn-sm float-right btn-action" type="button"
+                            (click)="onRemoveClick($event, note);">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                        <button class="btn btn-light text-success mr-2 btn-sm float-right btn-action" type="button"
+                            (click)="onEditClick($event, note);">
+                            <i class="fas fa-pencil-alt"></i>
+                        </button>
+                        <h4 class="card-title text-warning">{{ note.title }}</h4>
+                        <p class="card-text card-text-optimum">{{ note.body }}</p>
+                        <span class="badge badge-secondary mr-1" *ngFor="let tag of note.tags">{{ tag }}</span>
+                    </div>
+                    <div class="card-footer text-muted" style="font-size: 12px;">
+                        <div>Dated: {{ note.created | date: 'medium' }}</div>
+                        <div>Last Updated {{ note.updated | date: 'medium' }}</div>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
 </div>

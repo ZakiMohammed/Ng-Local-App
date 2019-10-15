@@ -1,7 +1,23 @@
 .col-opacity {
-    opacity: 0.9;
+    opacity: 1;
 }
-.form-control, .form-control:focus {
+.display-4 {
+    font-size: 3.7rem;
+}
+.btn-action {
+    padding: 2px 6px;
+}
+.card-text-optimum {
+    margin-bottom: 0.5rem;
+}
+.badge {
+    padding: 4px 8px;
+    font-size: 12px;
+}
+.fa-times-circle {
+    cursor: pointer;
+}
+/* .form-control, .form-control:focus {
     background-color: #444;
     color: #fff;
 }
@@ -14,4 +30,4 @@
 }
 .toast-header {
     background-color: #555;
-}
+} */
