@@ -7,7 +7,7 @@ export class StorageService {
 
   constructor() { }
 
-  getText(key: string): any {
+  getText(key: string): string {
     let data = localStorage.getItem(key);
     if (data) {
       return data;

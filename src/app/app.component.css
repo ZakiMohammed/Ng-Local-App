@@ -2,7 +2,7 @@
     opacity: 1;
 }
 .display-4 {
-    font-size: 3.7rem;
+    font-size: 3.55rem;
 }
 .btn-action {
     padding: 2px 6px;
@@ -13,6 +13,11 @@
 .badge {
     padding: 4px 8px;
     font-size: 12px;
+}
+.from-control-sidebar {
+    width: 50px;
+    display: inline-block;
+    padding: .01rem .5rem;
 }
 .fa-times-circle {
     cursor: pointer;

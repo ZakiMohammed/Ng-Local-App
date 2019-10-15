@@ -6,16 +6,27 @@
             <div class="card">
                 <div class="card-body">
                     <div class="text-center">
-                        <img class="img-fluid rounded-circle mb-3" [src]="imagePath" style="height: 128px;">
+                        <img class="img-fluid rounded-circle mb-3" [src]="employee.image" style="height: 128px;">
                     </div>
                     <h1 class="display-4 text-warning">{{ time }}</h1>
                     <div>{{ date }}</div>
-                    <div>Welcome {{ name }}</div>
+                    <div>Welcome {{employee.name}}</div>
                 </div>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">
+                        <b>CTID</b><span class="float-right">{{ employee.id }}</span>
+                    </li>
+                    <li class="list-group-item" (dblclick)="onInTimeDoubleClick($event)">
+                        <b>In Time</b>
+                        <span [hidden]="!hidInTime">
+                            <span class="float-right">{{ employee.inTime }}</span>
+                        </span>
+                        <span [hidden]="hidInTime" class=" float-right">
+                            <input #txtInTime type="text" class="form-control form-control-sm from-control-sidebar" (keydown.enter)="onInTimeKeyDown($event)">
+                        </span>
+                    </li>
+                </ul>
             </div>
-            <button type="button" class="btn btn-warning btn-block mt-3" (click)="onAddClick($event)">
-                <i class="fas fa-plus"></i> New Note
-            </button>
         </div>
 
         <!-- right side -->
@@ -48,7 +59,7 @@
                             </div>
                             <div class="input-group mb-3">
                                 <input type="text" class="form-control col-3" placeholder="Enter tag"
-                                    (keyup.enter)="onTagAddClick($event)" #txtTag>
+                                    (keyup.enter)="onTagAddClick($event)">
                                 <div class="input-group-append">
                                     <button class="btn btn-primary" type="button" id="button-addon2"
                                         (click)="onTagAddClick($event)">+</button>
@@ -61,8 +72,10 @@
                             </div>
                             <div>
                                 <button class="btn btn-success mr-2" [disabled]="!frm.valid">Save Note</button>
-                                <button type="reset" class="btn btn-secondary mr-2" (click)="onResetClick($event)">Reset</button>
-                                <button type="button" class="btn btn-light float-right" (click)="onCancelClick($event)">Cancel</button>
+                                <button type="reset" class="btn btn-outline-success mr-2"
+                                    (click)="onResetClick($event)" [disabled]="frm.pristine">Reset</button>
+                                <button type="button" class="btn btn-light float-right"
+                                    (click)="onCancelClick($event)">Cancel</button>
                             </div>
                         </form>
                     </div>
@@ -72,24 +85,33 @@
 
             <!-- search -->
             <div class="row">
-                <div class="col-10">
-                    <div class="input-group input-group-lg mb-3">
+                <div class="col-md-2">
+                    <button type="button" title="New Note" class="btn btn-warning btn-block" (click)="onAddClick($event)">
+                        <i class="fas fa-plus"></i> 
+                    </button>
+                </div>
+                <div class="col-8">
+                    <div class="input-group mb-3">
                         <div class="input-group-prepend">
                             <span class="input-group-text">
                                 <i class="fas fa-search"></i>
                             </span>
                         </div>
-                        <input type="text" class="form-control" placeholder="Search" [(ngModel)]="search">
+                        <input type="text" class="form-control" placeholder="Search title or tag" [(ngModel)]="search" autofocus>
                     </div>
                 </div>
                 <div class="col-md-2">
                     <div class="btn-group" role="group">
-                        <button type="button" class="btn btn-outline-warning" [ngClass]="{ 'btn-warning': isGrid, 'btn-outline-warning': !isGrid }" (click)="isGrid = true">
+                        <button type="button" class="btn btn-outline-secondary"
+                            [ngClass]="{ 'btn-secondary': isGrid, 'btn-outline-secondary': !isGrid }"
+                            (click)="isGrid = true">
                             <i class="fas fa-th"></i>
                         </button>
-                        <button type="button" class="btn" [ngClass]="{ 'btn-warning': !isGrid, 'btn-outline-warning': isGrid }" (click)="isGrid = false">
+                        <button type="button" class="btn"
+                            [ngClass]="{ 'btn-secondary': !isGrid, 'btn-outline-secondary': isGrid }"
+                            (click)="isGrid = false">
                             <i class="fas fa-th-list"></i>
-                        </button>                        
+                        </button>
                     </div>
                 </div>
             </div>

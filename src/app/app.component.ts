@@ -3,6 +3,7 @@ import { Note } from './models/note';
 import { StorageService } from './services/storage.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Helper } from './models/helper';
+import { Employee } from './models/employee';
 
 declare var window: any;
 
@@ -13,29 +14,32 @@ declare var window: any;
 })
 export class AppComponent implements OnInit {
 
-  STORAGE_OBJECT_NAME: string = 'noteList';
-
-  name: string = 'Zaki Mohammed';
-  imagePath: string = '/assets/imgs/user.jpg';
+  STORAGE_NOTE_LIST: string = 'noteList';
+  STORAGE_EMPLOYEE: string = 'employee';
+  
   time: string = '';
   date: string = '';
   intervalTime: any;
   index: number = -1;
-
-  private _search: string = '';
   
+  employee: Employee = null;
+
   note: Note = null;
   noteList: Note[] = [];
   filterNoteList: Note[] = [];
   tagList: string[] = [];
 
-  hidForm: boolean = true;
+  hidForm: boolean = true;  
+  hidInTime: boolean = true;
   isGrid: boolean = false;
 
   frm: FormGroup;
 
+  _search: string = '';
+
   @ViewChild('txtTitle', { static: true }) txtTitle: ElementRef;
   @ViewChild('txtTag', { static: true }) txtTag: ElementRef;
+  @ViewChild('txtInTime', { static: true }) txtInTime: ElementRef;
 
   get f() {
     return this.frm.controls;
@@ -45,6 +49,7 @@ export class AppComponent implements OnInit {
   }
   set search(value: string) {
     this._search = value;
+    value = value.toLocaleLowerCase();
 
     if(value === '') {
       this.filterNoteList = this.noteList.slice();
@@ -52,7 +57,8 @@ export class AppComponent implements OnInit {
     }
 
     this.filterNoteList = this.noteList.filter(i => 
-      i.title.toLocaleLowerCase().indexOf(value.toLocaleLowerCase()) !== -1
+      i.title.toLocaleLowerCase().indexOf(value) !== -1 ||
+      i.tags.findIndex(i => i.toLocaleLowerCase().indexOf(value) !== -1) !== -1
     );
   }
   
@@ -60,11 +66,10 @@ export class AppComponent implements OnInit {
     private storageService: StorageService,
     private builder: FormBuilder) {
 
-    this.noteList = <Note[]>this.storageService.getObject(this.STORAGE_OBJECT_NAME);
-    if (this.noteList == null) {
-      this.noteList = [];
-    }
-    this.filterNoteList = this.noteList.slice();
+    this.noteList = <Note[]>this.storageService.getObject(this.STORAGE_NOTE_LIST) || [];
+    this.employee = <Employee>this.storageService.getObject(this.STORAGE_EMPLOYEE) || new Employee();
+
+    this.filterNoteList = this.noteList.slice();        
   }
 
   ngOnInit(): void {
@@ -86,11 +91,12 @@ export class AppComponent implements OnInit {
   }
 
   onTagAddClick($event: any) {
-    let tag: string = this.txtTag.nativeElement.value;
+    let tag: string = $event.target.value;
     if (tag) {
       let found = this.tagList.find(i => i.toLocaleLowerCase() === tag.toLocaleLowerCase());
       if (!found) {
-        this.tagList.push(tag);
+        this.tagList.push(tag.toLocaleLowerCase());
+        $event.target.value = '';
       }
     }
   }
@@ -125,7 +131,7 @@ export class AppComponent implements OnInit {
 
     this.filterNoteList = this.noteList.slice();
     
-    this.storageService.setObject(this.STORAGE_OBJECT_NAME, this.noteList);
+    this.storageService.setObject(this.STORAGE_NOTE_LIST, this.noteList);
     this.hidForm = !this.hidForm;
     this.frm.reset();
     this.tagList = [];
@@ -151,7 +157,7 @@ export class AppComponent implements OnInit {
 
     index = this.noteList.findIndex(i => i.created === note.created);    
     this.noteList.splice(index, 1);
-    this.storageService.setObject(this.STORAGE_OBJECT_NAME, this.noteList);
+    this.storageService.setObject(this.STORAGE_NOTE_LIST, this.noteList);
   }
   
   onEditClick($event: any, note: Note) {
@@ -165,6 +171,23 @@ export class AppComponent implements OnInit {
     this.hidForm = !this.hidForm;
 
     window.scrollTo(0, 0);
+  }
+
+  onInTimeDoubleClick($event: any) {
+    this.hidInTime = !this.hidInTime;
+    this.txtInTime.nativeElement.value = this.employee.inTime;
+    setTimeout(() => {
+      this.txtInTime.nativeElement.focus();
+    });
+  }
+
+  onInTimeKeyDown($event: any) {
+    let inTime = $event.target.value;
+    if (inTime) {
+      this.employee.inTime = inTime;
+      this.storageService.setObject(this.STORAGE_EMPLOYEE, this.employee);
+      this.hidInTime = true;
+    }
   }
 
   handleEnterKeyPress($event: any) {
