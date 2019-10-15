@@ -1,4 +1,3 @@
-import { APP_BASE_HREF, LocationStrategy, HashLocationStrategy } from '@angular/common';
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -16,10 +15,7 @@ import { AppComponent } from './app.component';
     ReactiveFormsModule, 
     AppRoutingModule 
   ],
-  providers: [
-    { provide: APP_BASE_HREF, useValue: '/' },
-    { provide: LocationStrategy, useClass: HashLocationStrategy },
-  ],
+  providers: [],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

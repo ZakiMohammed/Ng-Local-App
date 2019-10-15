@@ -89,30 +89,25 @@
                     <button type="button" title="New Note" class="btn btn-warning btn-block" (click)="onAddClick($event)">
                         <i class="fas fa-plus"></i> 
                     </button>
+                    <div class="pt-3 d-md-none"></div>
                 </div>
-                <div class="col-8">
-                    <div class="input-group mb-3">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text">
-                                <i class="fas fa-search"></i>
-                            </span>
-                        </div>
-                        <input type="text" class="form-control" placeholder="Search title or tag" [(ngModel)]="search" autofocus>
-                    </div>
+                <div class="col-7 col-md-8">
+                    <input type="text" class="form-control form-control-search mb-3" placeholder="Search title or tag" [(ngModel)]="search" autofocus>
                 </div>
-                <div class="col-md-2">
+                <div class="col-5 col-md-2">
                     <div class="btn-group" role="group">
                         <button type="button" class="btn btn-outline-secondary"
-                            [ngClass]="{ 'btn-secondary': isGrid, 'btn-outline-secondary': !isGrid }"
-                            (click)="isGrid = true">
+                            [ngClass]="{ 'btn-secondary': isGrid, 'btn-outline-secondary btn-order': !isGrid }"
+                            (click)="onLayoutClick($event, true)">
                             <i class="fas fa-th"></i>
                         </button>
                         <button type="button" class="btn"
-                            [ngClass]="{ 'btn-secondary': !isGrid, 'btn-outline-secondary': isGrid }"
-                            (click)="isGrid = false">
+                            [ngClass]="{ 'btn-secondary': !isGrid, 'btn-outline-secondary btn-order': isGrid }"
+                            (click)="onLayoutClick($event, false)">
                             <i class="fas fa-th-list"></i>
                         </button>
                     </div>
+                    <div class="pt-3 d-md-none"></div>
                 </div>
             </div>
 

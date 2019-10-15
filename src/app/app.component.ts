@@ -16,6 +16,7 @@ export class AppComponent implements OnInit {
 
   STORAGE_NOTE_LIST: string = 'noteList';
   STORAGE_EMPLOYEE: string = 'employee';
+  STORAGE_LAYOUT: string = 'layout';
   
   time: string = '';
   date: string = '';
@@ -68,6 +69,7 @@ export class AppComponent implements OnInit {
 
     this.noteList = <Note[]>this.storageService.getObject(this.STORAGE_NOTE_LIST) || [];
     this.employee = <Employee>this.storageService.getObject(this.STORAGE_EMPLOYEE) || new Employee();
+    this.isGrid = <boolean>this.storageService.getText(this.STORAGE_LAYOUT) || false;
 
     this.filterNoteList = this.noteList.slice();        
   }
@@ -188,6 +190,11 @@ export class AppComponent implements OnInit {
       this.storageService.setObject(this.STORAGE_EMPLOYEE, this.employee);
       this.hidInTime = true;
     }
+  }
+
+  onLayoutClick($event: any, isGrid: boolean) {
+    this.isGrid = isGrid;
+    this.storageService.setText(this.STORAGE_LAYOUT, this.isGrid);
   }
 
   handleEnterKeyPress($event: any) {

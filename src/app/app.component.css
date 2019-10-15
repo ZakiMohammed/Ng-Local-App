@@ -1,8 +1,8 @@
 .col-opacity {
-    opacity: 1;
+    opacity: 0.95;
 }
 .display-4 {
-    font-size: 3.55rem;
+    font-size: 50px;
 }
 .btn-action {
     padding: 2px 6px;
@@ -22,7 +22,20 @@
 .fa-times-circle {
     cursor: pointer;
 }
-/* .form-control, .form-control:focus {
+.btn-order {
+    border-color: #becad6;
+}
+.form-control:focus {
+    border-color: #ffb400;
+}
+/* 
+.form-control-search {
+    background-color: transparent;
+}
+.form-control-search:focus {
+    border-color: #ffb400;
+}
+.form-control, .form-control:focus {
     background-color: #444;
     color: #fff;
 }
