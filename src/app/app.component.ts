@@ -3,7 +3,7 @@ import { Note } from './models/note';
 import { StorageService } from './services/storage.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Helper } from './models/helper';
-import { Employee } from './models/employee';
+import { User } from './models/user';
 
 declare var window: any;
 
@@ -15,26 +15,30 @@ declare var window: any;
 export class AppComponent implements OnInit {
 
   STORAGE_NOTE_LIST: string = 'noteList';
-  STORAGE_EMPLOYEE: string = 'employee';
+  STORAGE_USER: string = 'user';
   STORAGE_LAYOUT: string = 'layout';
-  
+
   time: string = '';
   date: string = '';
   intervalTime: any;
   index: number = -1;
-  
-  employee: Employee = null;
+
+  user: User = null;
+  defaultUser: User;
 
   note: Note = null;
   noteList: Note[] = [];
   filterNoteList: Note[] = [];
   tagList: string[] = [];
 
-  hidForm: boolean = true;  
+  hidForm: boolean = true;
   hidInTime: boolean = true;
   isGrid: boolean = false;
 
+  showModal: boolean = false;
+
   frm: FormGroup;
+  frmModal: FormGroup;
 
   _search: string = '';
 
@@ -52,36 +56,42 @@ export class AppComponent implements OnInit {
     this._search = value;
     value = value.toLocaleLowerCase();
 
-    if(value === '') {
+    if (value === '') {
       this.filterNoteList = this.noteList.slice();
       return;
     }
 
-    this.filterNoteList = this.noteList.filter(i => 
+    this.filterNoteList = this.noteList.filter(i =>
       i.title.toLocaleLowerCase().indexOf(value) !== -1 ||
       i.tags.findIndex(i => i.toLocaleLowerCase().indexOf(value) !== -1) !== -1
     );
   }
-  
+
   constructor(
     private storageService: StorageService,
     private builder: FormBuilder) {
 
     this.noteList = <Note[]>this.storageService.getObject(this.STORAGE_NOTE_LIST) || [];
-    this.employee = <Employee>this.storageService.getObject(this.STORAGE_EMPLOYEE) || new Employee();
+    this.user = <User>this.storageService.getObject(this.STORAGE_USER) || new User();
     this.isGrid = <boolean>this.storageService.getText(this.STORAGE_LAYOUT) || false;
 
-    this.filterNoteList = this.noteList.slice();        
+    this.filterNoteList = this.noteList.slice();
+    this.defaultUser = new User();
   }
 
   ngOnInit(): void {
     this.time = this.getTime();
     this.date = this.getDate();
-    this.intervalTime = setInterval(() => this.time = this.getTime(), 1000);  
+    this.intervalTime = setInterval(() => this.time = this.getTime(), 1000);
 
     this.frm = this.builder.group({
       title: ['', [Validators.required, Validators.minLength(3)]],
-      body: ['']      
+      body: ['']
+    });
+    this.frmModal = this.builder.group({
+      id: [this.user.id],
+      name: [this.user.name],
+      url: [this.user.image]
     });
   }
 
@@ -118,7 +128,7 @@ export class AppComponent implements OnInit {
         tags: this.tagList,
         created: new Date(),
         updated: new Date()
-      });      
+      });
     } else {
       this.noteList[this.index] = {
         title: this.frm.value.title,
@@ -132,11 +142,21 @@ export class AppComponent implements OnInit {
     }
 
     this.filterNoteList = this.noteList.slice();
-    
+
     this.storageService.setObject(this.STORAGE_NOTE_LIST, this.noteList);
     this.hidForm = !this.hidForm;
     this.frm.reset();
     this.tagList = [];
+  }
+
+  onModalSubmit($event: any) {
+    this.user = {
+      id: this.frmModal.value.id,
+      name: this.frmModal.value.name,
+      image: this.frmModal.value.url
+    };
+    this.storageService.setObject(this.STORAGE_USER, this.user);
+    this.showModal = false;
   }
 
   onResetClick($event: any) {
@@ -157,11 +177,11 @@ export class AppComponent implements OnInit {
     let index = this.filterNoteList.findIndex(i => i.created === note.created);
     this.filterNoteList.splice(index, 1);
 
-    index = this.noteList.findIndex(i => i.created === note.created);    
+    index = this.noteList.findIndex(i => i.created === note.created);
     this.noteList.splice(index, 1);
     this.storageService.setObject(this.STORAGE_NOTE_LIST, this.noteList);
   }
-  
+
   onEditClick($event: any, note: Note) {
     this.index = this.noteList.findIndex(i => i.created === note.created);
     this.note = note;
@@ -175,26 +195,17 @@ export class AppComponent implements OnInit {
     window.scrollTo(0, 0);
   }
 
-  onInTimeDoubleClick($event: any) {
-    this.hidInTime = !this.hidInTime;
-    this.txtInTime.nativeElement.value = this.employee.inTime;
-    setTimeout(() => {
-      this.txtInTime.nativeElement.focus();
-    });
-  }
-
-  onInTimeKeyDown($event: any) {
-    let inTime = $event.target.value;
-    if (inTime) {
-      this.employee.inTime = inTime;
-      this.storageService.setObject(this.STORAGE_EMPLOYEE, this.employee);
-      this.hidInTime = true;
-    }
-  }
-
   onLayoutClick($event: any, isGrid: boolean) {
     this.isGrid = isGrid;
     this.storageService.setText(this.STORAGE_LAYOUT, this.isGrid);
+  }
+
+  onProfileModalOpenClick($event: any) {
+    this.showModal = true;
+  }
+
+  onProfileModalCloseClick($event: any) {
+    this.showModal = false;
   }
 
   handleEnterKeyPress($event: any) {

@@ -6,27 +6,17 @@
             <div class="card">
                 <div class="card-body">
                     <div class="text-center">
-                        <img class="img-fluid rounded-circle mb-3" [src]="employee.image" style="height: 128px;">
+                        <img class="img-fluid mb-3" [ngClass]="{ 'rounded-circle' : user.image }" [src]="user.image || defaultUser.image" style="height: 128px;">
                     </div>
                     <h1 class="display-4 text-warning">{{ time }}</h1>
                     <div>{{ date }}</div>
-                    <div>Welcome {{employee.name}}</div>
+                    <div>Welcome {{user.name || defaultUser.name }}</div>
+                    <div>{{ user.id }}</div>
                 </div>
-                <ul class="list-group list-group-flush">
-                    <li class="list-group-item">
-                        <b>CTID</b><span class="float-right">{{ employee.id }}</span>
-                    </li>
-                    <li class="list-group-item" (dblclick)="onInTimeDoubleClick($event)">
-                        <b>In Time</b>
-                        <span [hidden]="!hidInTime">
-                            <span class="float-right">{{ employee.inTime }}</span>
-                        </span>
-                        <span [hidden]="hidInTime" class=" float-right">
-                            <input #txtInTime type="text" class="form-control form-control-sm from-control-sidebar" (keydown.enter)="onInTimeKeyDown($event)">
-                        </span>
-                    </li>
-                </ul>
             </div>
+            <button class="btn btn-secondary btn-block mt-3" type="button" (click)="onProfileModalOpenClick($event)">
+                <i class="far fa-edit"></i> Edit User Profile
+            </button>
         </div>
 
         <!-- right side -->
@@ -72,8 +62,8 @@
                             </div>
                             <div>
                                 <button class="btn btn-success mr-2" [disabled]="!frm.valid">Save Note</button>
-                                <button type="reset" class="btn btn-outline-success mr-2"
-                                    (click)="onResetClick($event)" [disabled]="frm.pristine">Reset</button>
+                                <button type="reset" class="btn btn-outline-success mr-2" (click)="onResetClick($event)"
+                                    [disabled]="frm.pristine">Reset</button>
                                 <button type="button" class="btn btn-light float-right"
                                     (click)="onCancelClick($event)">Cancel</button>
                             </div>
@@ -86,13 +76,15 @@
             <!-- search -->
             <div class="row">
                 <div class="col-md-2">
-                    <button type="button" title="New Note" class="btn btn-warning btn-block" (click)="onAddClick($event)">
-                        <i class="fas fa-plus"></i> 
+                    <button type="button" title="New Note" class="btn btn-warning btn-block"
+                        (click)="onAddClick($event)">
+                        <i class="fas fa-plus"></i>
                     </button>
                     <div class="pt-3 d-md-none"></div>
                 </div>
                 <div class="col-7 col-md-8">
-                    <input type="text" class="form-control form-control-search mb-3" placeholder="Search title or tag" [(ngModel)]="search" autofocus>
+                    <input type="text" class="form-control form-control-search mb-3" placeholder="Search title or tag"
+                        [(ngModel)]="search" autofocus>
                 </div>
                 <div class="col-5 col-md-2">
                     <div class="btn-group" role="group">
@@ -137,3 +129,35 @@
         </div>
     </div>
 </div>
+
+<!-- Modal -->
+<div class="modal fade" [ngClass]="{ 'show modal-show' : showModal, 'modal-hide': !showModal }" id="modelId"
+    tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <form class="modal-content" novalidate [formGroup]="frmModal" (ngSubmit)="onModalSubmit($event)">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit User Profile</h5>
+                <button type="button" class="close" (click)="onProfileModalCloseClick($event)">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">                    
+                    <input type="text" class="form-control" placeholder="Enter ID" formControlName="id">
+                </div>
+                <div class="form-group">                    
+                    <input type="text" class="form-control" placeholder="Enter name" formControlName="name">
+                </div>
+                <div class="form-group">                    
+                    <input type="text" class="form-control" placeholder="Enter image URL" formControlName="url">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary"
+                    (click)="onProfileModalCloseClick($event)">Close</button>
+                <button type="submit" class="btn btn-primary">Save</button>
+            </div>
+        </form>
+    </div>
+</div>
+<div class="modal-backdrop show" *ngIf="showModal"></div>

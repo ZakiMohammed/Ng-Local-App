@@ -28,6 +28,13 @@
 .form-control:focus {
     border-color: #ffb400;
 }
+.modal-show {
+    display: block; 
+    padding-right: 17px;
+}
+.modal-hide {
+    display: none; 
+}
 /* 
 .form-control-search {
     background-color: transparent;
